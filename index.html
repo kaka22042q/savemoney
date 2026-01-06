@@ -7,54 +7,34 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>🐱 萬用智慧存錢手帳</title>
     <style>
-        :root { 
-            --cat-main: #FFB7B2; 
-            --cat-bg: #fffaf0; 
-            --cat-dark: #5D4037; 
-            --cat-gray: #D7CCC8; 
-            --cat-red: #ff7675; 
-            --cat-green: #55efc4; 
-            --cat-blue: #74b9ff; 
-        }
+        :root { --cat-main: #FFB7B2; --cat-bg: #fffaf0; --cat-dark: #5D4037; --cat-gray: #D7CCC8; --cat-red: #ff7675; --cat-green: #55efc4; --cat-blue: #74b9ff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            font-family: -apple-system, sans-serif; 
-            background-color: var(--cat-bg); 
-            color: var(--cat-dark); 
-            margin: 0; 
-            padding: 0 0 120px 0;
-        }
+        body { font-family: -apple-system, sans-serif; background-color: var(--cat-bg); color: var(--cat-dark); margin: 0; padding: 0 0 120px 0; }
         .container { max-width: 450px; margin: 0 auto; padding: 20px; }
         .text-center { text-align: center; }
         .cat-card { background: #ffffff; border: 3px solid var(--cat-dark); box-shadow: 6px 6px 0px var(--cat-gray); border-radius: 20px; margin-bottom: 20px; padding: 16px; }
-        
-        /* 提醒燈樣式 */
         .status-alert { padding: 10px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; font-size: 14px; border: 2px solid var(--cat-dark); text-align: center; }
         .status-unpaid { background: #ffeaa7; color: #d63031; border-color: #d63031; }
         .status-paid { background: #b2f2bb; color: #2b8a3e; border-color: #2b8a3e; }
-
-        /* 進度條 */
         .prog-container { background: #EFEBE9; height: 26px; border-radius: 13px; border: 2px solid var(--cat-dark); overflow: hidden; margin: 8px 0; position: relative; }
         .prog-fill { height: 100%; transition: width 1s ease; background: var(--cat-main); border-right: 2px solid var(--cat-dark); }
         .prog-text { position: absolute; width: 100%; text-align: center; font-size: 12px; font-weight: bold; line-height: 22px; z-index: 5; }
-
-        /* 導航列 */
         .nav-bar { position: fixed; bottom: 25px; left: 15px; right: 15px; background: rgba(255, 255, 255, 0.95); border: 3px solid var(--cat-dark); box-shadow: 0 10px 0px var(--cat-gray); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; border-radius: 30px; }
         .nav-item { border: none; background: none; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; width: 60px; }
         .nav-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; border-radius: 50%; margin-bottom: 4px; background: #f5f5f5; transition: all 0.2s; }
         .nav-text { font-size: 10px; font-weight: bold; color: var(--cat-gray); }
         .nav-item.active .nav-icon { background: var(--cat-main); border: 2px solid var(--cat-dark); box-shadow: 0 3px 0 var(--cat-dark); }
         .nav-item.active .nav-text { color: var(--cat-dark); }
-
         .mode-switch { display: flex; background: #eee; border-radius: 12px; padding: 4px; margin-bottom: 15px; border: 2px solid var(--cat-dark); }
         .mode-btn { flex: 1; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; background: none; color: #999; }
         .mode-btn.active { background: white; color: var(--cat-dark); }
         .mode-btn.active.spend { color: var(--cat-red); }
-        
         .page { display: none; }
         .page.active { display: block; }
         input { width: 100%; border: 2px solid var(--cat-gray); border-radius: 10px; padding: 10px; font-size: 15px; outline: none; }
         .btn-main { background: var(--cat-main); border: 2px solid var(--cat-dark); box-shadow: 0 4px 0px var(--cat-dark); font-weight: bold; color: white; border-radius: 12px; padding: 12px; width: 100%; cursor: pointer; margin-top: 10px; }
+        .btn-backup { background: var(--cat-blue); font-size: 14px; margin-bottom: 10px; }
+        .btn-import { background: #fff; color: var(--cat-dark); font-size: 14px; }
         .setup-row { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 5px; margin-bottom: 8px; align-items: center; }
         .history-row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 10px 0; font-size: 12px; }
     </style>
@@ -64,16 +44,12 @@
 <div class="container">
     <div id="page-home" class="page active">
         <h1 id="display-title" class="text-center" style="color: #FF748C;">🐾 夢想計畫</h1>
-        
         <div id="monthly-status" class="status-alert"></div>
-
         <div class="cat-card" style="background: #2d3436; color: white; border-color: #2d3436;">
             <div style="display: flex; justify-content: space-between; font-size: 12px;"><span>剩餘達標時間</span><span id="mLeft" style="color: #fdcb6e; font-weight: bold;">-- 個月</span></div>
             <div class="prog-container" style="background: #636e72; border-color: white; height: 10px;"><div id="timeBar" class="prog-fill" style="background: #fdcb6e; border:none;"></div></div>
         </div>
-
         <div id="jarList"></div>
-
         <div class="cat-card" style="background: #fff5f5;">
             <h3 class="text-center" style="margin:0 0 10px 0">🍼 帳務調整</h3>
             <div class="mode-switch">
@@ -85,8 +61,9 @@
         </div>
     </div>
 
-    <div id="page-budget" class="page"><h2 class="text-center">📝 預算規劃筆記</h2><div class="cat-card"><textarea id="budget-content" style="height: 350px; width:100%; border:2px solid var(--cat-gray); border-radius:10px; padding:10px; font-family:monospace;" placeholder="詳細預算清單..."></textarea><button onclick="saveBudget()" class="btn-main" style="background:var(--cat-blue)">儲存筆記</button></div></div>
+    <div id="page-budget" class="page"><h2 class="text-center">📝 預算規劃筆記</h2><div class="cat-card"><textarea id="budget-content" style="height: 350px; width:100%; border:2px solid var(--cat-gray); border-radius:10px; padding:10px; font-family:monospace;" placeholder="詳細清單..."></textarea><button onclick="saveBudget()" class="btn-main" style="background:var(--cat-blue)">儲存筆記</button></div></div>
     <div id="page-history" class="page"><h2 class="text-center">📜 歷史紀錄簿</h2><div class="cat-card" id="historyList"></div></div>
+    
     <div id="page-settings" class="page">
         <h2 class="text-center">⚙️ 計畫核心設定</h2>
         <div class="cat-card">
@@ -96,7 +73,13 @@
             <button onclick="addJarSetup()" class="btn-main" style="background:#fff; color:var(--cat-dark); padding:5px; font-size:12px">+ 增加存錢筒</button>
             <button onclick="applySettings()" class="btn-main" style="margin-top:20px; background:#55efc4">套用設定</button>
         </div>
-        <div class="cat-card"><button onclick="exportData()" class="btn-main" style="background:var(--cat-blue); margin-bottom:10px">匯出備份</button><button onclick="fullReset()" style="width:100%; background:none; border:none; color:red; font-size:10px">⚠️ 徹底清空數據</button></div>
+        <div class="cat-card" style="background:#eee">
+            <h3 style="margin-top:0">💾 數據保險箱</h3>
+            <button onclick="exportData()" class="btn-main btn-backup">📤 匯出備份 (.json)</button>
+            <button onclick="document.getElementById('fileInput').click()" class="btn-main btn-import">📥 匯入備份 (.json)</button>
+            <input type="file" id="fileInput" style="display:none" onchange="importData(event)">
+            <button onclick="fullReset()" style="width:100%; background:none; border:none; color:red; font-size:10px; margin-top:20px">⚠️ 徹底清空數據</button>
+        </div>
     </div>
 </div>
 
@@ -182,7 +165,7 @@
         const start = new Date(store.config.start);
         const end = new Date(store.config.end);
 
-        // 更新本月存款狀態
+        // 本月存款狀態檢查
         const currentMonthStr = now.getFullYear() + "/" + (now.getMonth() + 1);
         const hasDepositedThisMonth = store.history.some(h => {
             const hDate = new Date(h.time);
@@ -197,8 +180,9 @@
             alertEl.innerHTML = "⚠️ 喵！本月尚未存錢唷，記得餵食夢想！";
         }
 
-        // 時間計算
+        // 進度計算
         let totalMonths = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+        totalMonths = Math.max(totalMonths, 1);
         let passedMonths = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
         passedMonths = Math.max(0, Math.min(passedMonths, totalMonths));
         
@@ -215,29 +199,11 @@
             const cur = store.balances[jar.name] || 0;
             const pct = Math.min(Math.round((cur / jar.goal) * 100), 100);
             const unit = jar.name.includes("日幣") ? "¥" : "$";
-            
-            // 計算此時應存 (目標 / 總月數 * 已過月數)
             const monthlyPlan = jar.goal / totalMonths;
-            const targetNow = Math.round(monthlyPlan * (passedMonths + 1)); // 包含當月
+            const targetNow = Math.round(monthlyPlan * (passedMonths + 1));
             const gap = targetNow - cur;
 
-            list.innerHTML += `
-                <div class="cat-card">
-                    <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:bold;">
-                        <span>${jar.name}</span><span>${unit}${cur.toLocaleString()} / ${jar.goal.toLocaleString()}</span>
-                    </div>
-                    <div class="prog-container">
-                        <div class="prog-text">${pct}%</div>
-                        <div class="prog-fill" style="width:${pct}%"></div>
-                    </div>
-                    <div style="font-size:10px; color:#666; display:flex; justify-content:space-between; margin-top:4px;">
-                        <span>📍 此時應存: ${unit}${targetNow.toLocaleString()}</span>
-                        <span style="color:${gap > 0 ? 'var(--cat-red)' : 'var(--cat-green)'}; font-weight:bold;">
-                            ${gap > 0 ? '還差 ' + unit + gap.toLocaleString() : '已領先 ✨'}
-                        </span>
-                    </div>
-                </div>`;
-            
+            list.innerHTML += `<div class="cat-card"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:bold;"><span>${jar.name}</span><span>${unit}${cur.toLocaleString()} / ${jar.goal.toLocaleString()}</span></div><div class="prog-container"><div class="prog-text">${pct}%</div><div class="prog-fill" style="width:${pct}%"></div></div><div style="font-size:10px; color:#666; display:flex; justify-content:space-between; margin-top:4px;"><span>📍 此時應存: ${unit}${targetNow.toLocaleString()}</span><span style="color:${gap > 0 ? 'var(--cat-red)' : 'var(--cat-green)'}; font-weight:bold;">${gap > 0 ? '還差 ' + unit + gap.toLocaleString() : '已領先 ✨'}</span></div></div>`;
             const suggest = Math.ceil((jar.goal - cur) / Math.max(mLeft, 1));
             grid.innerHTML += `<div><small style="font-size:10px; color:#888;">💡 建議存: ${unit}${suggest.toLocaleString()}</small><input type="number" class="record-input" data-name="${jar.name}" placeholder="${jar.name}"></div>`;
         });
@@ -266,18 +232,11 @@
         hList.innerHTML = store.history.map(item => {
             const d = new Date(item.time);
             const timeStr = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
-            return `
-            <div class="history-row">
-                <div>
-                    <div style="font-size:10px; color:#999;"><span style="background:${item.type==='spend'?'var(--cat-red)':'var(--cat-green)'}; color:white; padding:1px 4px; border-radius:3px; margin-right:4px;">${item.type==='spend'?'支出':'存款'}</span>${timeStr}</div>
-                    <div style="font-weight:bold;">${Object.entries(item.vals).map(([k,v]) => `${k}:${v}`).join(", ")}</div>
-                </div>
-                <button onclick="deleteItem(${item.id})" style="background:none; border:none; color:red; font-size:16px;">🗑️</button>
-            </div>`}).join("");
+            return `<div class="history-row"><div><div style="font-size:10px; color:#999;"><span style="background:${item.type==='spend'?'var(--cat-red)':'var(--cat-green)'}; color:white; padding:1px 4px; border-radius:3px; margin-right:4px;">${item.type==='spend'?'支出':'存款'}</span>${timeStr}</div><div style="font-weight:bold;">${Object.entries(item.vals).map(([k,v]) => `${k}:${v.toLocaleString()}`).join(", ")}</div></div><button onclick="deleteItem(${item.id})" style="background:none; border:none; color:red; font-size:16px;">🗑️</button></div>`}).join("");
     }
 
     function deleteItem(id) {
-        if(!confirm("確定刪除這筆紀錄？")) return;
+        if(!confirm("確定要刪除這筆紀錄？")) return;
         const idx = store.history.findIndex(i => i.id === id);
         if(idx > -1) {
             const item = store.history[idx];
@@ -288,12 +247,44 @@
 
     function saveBudget() { store.budgetText = document.getElementById('budget-content').value; saveToDB(); alert("儲存成功！"); }
     function saveToDB() { localStorage.setItem(DB_KEY, JSON.stringify(store)); }
+    
+    // 備份匯出功能
     function exportData() {
-        const blob = new Blob([JSON.stringify(store)], {type: "application/json"});
+        const dataStr = JSON.stringify(store, null, 2);
+        const blob = new Blob([dataStr], {type: "application/json"});
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a"); a.href = url; a.download = "backup.json"; a.click();
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `saving_backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
     }
-    function fullReset() { if(confirm("確定清空？")) { localStorage.removeItem(DB_KEY); location.reload(); } }
+
+    // 備份匯入功能
+    function importData(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const imported = JSON.parse(event.target.result);
+                if (imported.config && imported.balances) {
+                    if(confirm("匯入備份將會覆蓋目前的資料，確定嗎？")) {
+                        store = imported;
+                        saveToDB();
+                        location.reload();
+                    }
+                } else {
+                    alert("檔案內容格式不正確！");
+                }
+            } catch(e) {
+                alert("讀取失敗：不是正確的 JSON 檔案。");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function fullReset() { if(confirm("確定清空所有數據？這無法復原喔！")) { localStorage.removeItem(DB_KEY); location.reload(); } }
 
     updateUI();
 </script>
