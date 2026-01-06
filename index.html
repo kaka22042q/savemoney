@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🐱 夢想貓咪存錢手帳 V2.3</title>
+    <title>🐱 夢想貓咪存錢手帳 V2.4</title>
     <style>
         :root { --cat-main: #FFB7B2; --cat-bg: #fffaf0; --cat-dark: #5D4037; --cat-gray: #D7CCC8; --cat-red: #ff7675; --cat-green: #55efc4; --cat-blue: #74b9ff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -16,34 +16,31 @@
         .cat-emoji { font-size: 60px; z-index: 2; }
         .bubble { position: absolute; background: white; border: 2px solid var(--cat-dark); border-radius: 15px; padding: 8px 12px; font-size: 14px; font-weight: bold; top: 0px; left: 55%; display: none; z-index: 10; width: 150px; box-shadow: 4px 4px 0 var(--cat-gray); }
         
-        /* 卡片設計 */
-        .cat-card { background: #ffffff; border: 3px solid var(--cat-dark); box-shadow: 6px 6px 0px var(--cat-gray); border-radius: 20px; margin-bottom: 20px; padding: 16px; }
-        .status-alert { padding: 10px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; font-size: 14px; border: 2px solid var(--cat-dark); text-align: center; }
-        .status-unpaid { background: #ffeaa7; color: #d63031; }
-        .status-paid { background: #b2f2bb; color: #2b8a3e; }
-        
-        /* 進度條 */
+        /* 卡片與進度條 */
+        .cat-card { background: #ffffff; border: 3px solid var(--cat-dark); box-shadow: 6px 6px 0px var(--cat-gray); border-radius: 20px; margin-bottom: 20px; padding: 16px; position: relative; }
         .prog-container { background: #EFEBE9; height: 26px; border-radius: 13px; border: 2px solid var(--cat-dark); overflow: hidden; margin: 8px 0; position: relative; }
         .prog-fill { height: 100%; transition: width 1s ease; background: var(--cat-main); border-right: 2px solid var(--cat-dark); }
         .prog-text { position: absolute; width: 100%; text-align: center; font-size: 12px; font-weight: bold; line-height: 22px; z-index: 5; }
 
+        /* 彈窗明細 (Modal) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 90%; max-width: 400px; border-radius: 20px; border: 3px solid var(--cat-dark); padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; font-size: 14px; }
+        .btn-close { background: var(--cat-gray); border: 2px solid var(--cat-dark); border-radius: 10px; padding: 8px; width: 100%; margin-top: 15px; font-weight: bold; cursor: pointer; }
+
+        /* 設定與導航 */
         .nav-bar { position: fixed; bottom: 25px; left: 15px; right: 15px; background: rgba(255, 255, 255, 0.95); border: 3px solid var(--cat-dark); box-shadow: 0 8px 0px var(--cat-gray); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; border-radius: 30px; }
-        .nav-item { border: none; background: none; display: flex; flex-direction: column; align-items: center; width: 60px; }
-        .nav-icon { font-size: 24px; padding: 5px; }
+        .nav-item { border: none; background: none; cursor: pointer; }
+        .nav-icon { font-size: 24px; padding: 8px; }
         .nav-item.active .nav-icon { background: var(--cat-main); border-radius: 15px; border: 2px solid var(--cat-dark); }
         
-        /* 設定頁格位 - 強化版 */
-        .setup-item { background: #fdfdfd; padding: 15px; border: 2px solid var(--cat-dark); border-radius: 15px; margin-bottom: 20px; box-shadow: 4px 4px 0 #eee; }
-        .setup-row { margin-bottom: 12px; }
-        .setup-label { font-size: 12px; font-weight: bold; color: var(--cat-dark); margin-bottom: 4px; display: block; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        
-        input { width: 100%; border: 2px solid var(--cat-dark); border-radius: 10px; padding: 10px; font-size: 15px; background: white; outline: none; }
-        .btn-main { background: var(--cat-main); border: 2px solid var(--cat-dark); box-shadow: 0 4px 0px var(--cat-dark); font-weight: bold; color: white; border-radius: 12px; padding: 14px; width: 100%; cursor: pointer; margin-top: 10px; font-size: 16px; }
-        .btn-delete { color: #ff7675; background: none; border: 2px solid #ff7675; border-radius: 8px; width: 100%; margin-top: 10px; padding: 5px; font-weight: bold; cursor: pointer; }
+        .setup-item { background: #fdfdfd; padding: 15px; border: 2px solid var(--cat-dark); border-radius: 15px; margin-bottom: 20px; }
+        input { width: 100%; border: 2px solid var(--cat-dark); border-radius: 10px; padding: 10px; font-size: 15px; outline: none; }
+        .btn-main { background: var(--cat-main); border: 2px solid var(--cat-dark); box-shadow: 0 4px 0px var(--cat-dark); font-weight: bold; color: white; border-radius: 12px; padding: 14px; width: 100%; cursor: pointer; margin-top: 10px; }
         
         .page { display: none; }
         .page.active { display: block; }
+        .status-alert { padding: 10px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; font-size: 13px; border: 2px solid var(--cat-dark); text-align: center; }
     </style>
 </head>
 <body>
@@ -54,33 +51,32 @@
             <div id="cat-bubble" class="bubble">喵嗚？</div>
             <span id="cat-avatar" class="cat-emoji">💤</span>
         </div>
-        <h1 id="display-title" class="text-center" style="color: #FF748C; margin: 0 0 15px 0;">我的存錢清單</h1>
+        <h1 id="display-title" class="text-center" style="color: #FF748C; margin: 0 0 15px 0;">夢想本</h1>
         <div id="monthly-status" class="status-alert"></div>
         <div id="jarList"></div>
         <div class="cat-card" style="background: #fff5f5;">
-            <h3 class="text-center" style="margin:0 0 15px 0">🐟 快速存款</h3>
-            <div id="inputGrid" style="display: grid; grid-template-columns: 1fr; gap: 15px;"></div>
-            <button id="submit-btn" onclick="saveRecord()" class="btn-main">確認存入 🐟</button>
+            <h3 class="text-center" style="margin:0 0 10px 0">🐟 存入新台幣</h3>
+            <div id="inputGrid" style="display: grid; gap: 15px;"></div>
+            <button onclick="saveRecord()" class="btn-main">確認存入 🐟</button>
         </div>
     </div>
 
     <div id="page-settings" class="page">
-        <h2 class="text-center">⚙️ 設定存錢目標</h2>
+        <h2 class="text-center">⚙️ 設定</h2>
         <div class="cat-card">
-            <label class="setup-label">✏️ 手帳總標題</label>
-            <input type="text" id="set-title" style="margin-bottom:20px">
-            
+            <label>手帳名稱</label><input type="text" id="set-title" style="margin-bottom:15px">
             <div id="jarSetupArea"></div>
-            <button onclick="addJarSetup()" class="btn-main" style="background:#fff; color:var(--cat-dark); border-style:dashed;">+ 增加獨立目標錢筒</button>
-            <button onclick="applySettings()" class="btn-main" style="background:var(--cat-green); margin-top:20px;">全部儲存並套用 ✨</button>
-
-            <div style="margin-top:30px; text-align:center;">
-                <button onclick="exportData()" style="background:none; border:none; color:#999; text-decoration:underline; font-size:12px;">📤 匯出資料</button>
-                &nbsp; | &nbsp;
-                <button onclick="document.getElementById('fileInput').click()" style="background:none; border:none; color:#999; text-decoration:underline; font-size:12px;">📥 匯入資料</button>
-                <input type="file" id="fileInput" style="display:none" onchange="importData(event)">
-            </div>
+            <button onclick="addJarSetup()" class="btn-main" style="background:#fff; color:var(--cat-dark); border-style:dashed;">+ 增加錢筒</button>
+            <button onclick="applySettings()" class="btn-main" style="background:var(--cat-green); margin-top:15px;">保存設定</button>
         </div>
+    </div>
+</div>
+
+<div id="historyModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle" style="margin-top:0">存款明細</h3>
+        <div id="modalHistoryList"></div>
+        <button class="btn-close" onclick="closeModal()">關閉</button>
     </div>
 </div>
 
@@ -90,144 +86,151 @@
 </nav>
 
 <script>
-    const DB_KEY = 'cat_independent_v9';
+    const DB_KEY = 'cat_detailed_v10';
     let store = JSON.parse(localStorage.getItem(DB_KEY)) || {
-        config: { title: "夢想儲蓄本", jars: [] },
-        balances: {}, history: []
+        config: { title: "我的存錢手帳", jars: [] },
+        history: [] // 結構: {id, jarName, amount, time}
     };
 
+    function updateUI() {
+        document.getElementById('display-title').innerText = store.config.title;
+        const list = document.getElementById('jarList');
+        const grid = document.getElementById('inputGrid');
+        list.innerHTML = ""; grid.innerHTML = "";
+        
+        let totalPct = 0;
+        const now = new Date();
+
+        store.config.jars.forEach(jar => {
+            // 計算目前金額 (從 history 加總)
+            const currentAmount = store.history
+                .filter(h => h.jarName === jar.name)
+                .reduce((sum, h) => sum + h.amount, 0);
+
+            const start = new Date(jar.start);
+            const end = new Date(jar.end);
+            const totalM = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
+            const passedM = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+            const safePassed = Math.max(0, Math.min(passedM, totalM - 1));
+            const pct = Math.min(Math.round((currentAmount / jar.goal) * 100), 100);
+            totalPct += pct;
+
+            list.innerHTML += `
+                <div class="cat-card" onclick="openHistory('${jar.name}')">
+                    <div style="display:flex;justify-content:space-between;font-weight:bold;">
+                        <span>${jar.name}</span>
+                        <span>${jar.unit}${currentAmount.toLocaleString()} / ${jar.goal.toLocaleString()}</span>
+                    </div>
+                    <div style="font-size:10px; color:#999;">📅 到期日: ${jar.end} (點擊看明細)</div>
+                    <div class="prog-container"><div class="prog-text">${pct}%</div><div class="prog-fill" style="width:${pct}%"></div></div>
+                </div>`;
+            
+            grid.innerHTML += `<div><small>${jar.name}</small><input type="number" class="record-input" data-name="${jar.name}" placeholder="0"></div>`;
+        });
+
+        // 貓咪與狀態
+        const avg = totalPct / (store.config.jars.length || 1);
+        document.getElementById('cat-avatar').innerText = avg >= 100 ? "🎊" : avg >= 80 ? "😻" : avg >= 40 ? "😺" : avg > 0 ? "🐱" : "💤";
+        const hasSaved = store.history.some(h => h.time.startsWith(now.toISOString().slice(0,7)));
+        const alertEl = document.getElementById('monthly-status');
+        alertEl.style.background = hasSaved ? "#b2f2bb" : "#ffeaa7";
+        alertEl.innerText = hasSaved ? "✨ 本月已達標！喵～" : "⚠️ 本月還沒餵錢筒喔！";
+    }
+
+    function saveRecord() {
+        document.querySelectorAll('.record-input').forEach(input => {
+            const val = Number(input.value);
+            if(val !== 0) {
+                store.history.unshift({
+                    id: Date.now() + Math.random(),
+                    jarName: input.dataset.name,
+                    amount: val,
+                    time: new Date().toISOString()
+                });
+            }
+            input.value = "";
+        });
+        saveToDB(); updateUI(); alert("存好囉！");
+    }
+
+    function openHistory(name) {
+        document.getElementById('modalTitle').innerText = `🐾 ${name} 明細`;
+        const hList = document.getElementById('modalHistoryList');
+        const filtered = store.history.filter(h => h.jarName === name);
+        
+        if(filtered.length === 0) {
+            hList.innerHTML = "<p class='text-center'>尚無紀錄</p>";
+        } else {
+            hList.innerHTML = filtered.map(h => `
+                <div class="history-item">
+                    <div>
+                        <div style="font-weight:bold">+ ${h.amount.toLocaleString()}</div>
+                        <div style="font-size:11px; color:#999;">${new Date(h.time).toLocaleDateString()}</div>
+                    </div>
+                    <button onclick="deleteRecord(${h.id})" style="background:none; border:none; color:red; font-size:18px;">🗑️</button>
+                </div>
+            `).join("");
+        }
+        document.getElementById('historyModal').style.display = 'flex';
+    }
+
+    function deleteRecord(id) {
+        if(confirm("⚠️ 喵！確定要刪除這筆存款紀錄嗎？金額會被扣除喔！")) {
+            store.history = store.history.filter(h => h.id !== id);
+            saveToDB();
+            updateUI();
+            closeModal();
+            alert("已刪除紀錄。");
+        }
+    }
+
+    function closeModal() { document.getElementById('historyModal').style.display = 'none'; }
+
+    // 設定頁邏輯
     function initSettingsPage() {
         document.getElementById('set-title').value = store.config.title;
         const area = document.getElementById('jarSetupArea');
         area.innerHTML = "";
-        if(store.config.jars.length === 0) addJarSetup();
-        else store.config.jars.forEach(jar => addJarUI(jar));
+        store.config.jars.forEach(jar => {
+            const div = document.createElement('div');
+            div.className = "setup-item";
+            div.innerHTML = `
+                <input type="text" class="j-unit" value="${jar.unit}" style="width:50px"> 
+                <input type="text" class="j-name" value="${jar.name}" style="width:calc(100% - 70px)">
+                <div style="margin-top:10px"><small>目標金額</small><input type="number" class="j-goal" value="${jar.goal}"></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                    <input type="month" class="j-start" value="${jar.start}">
+                    <input type="month" class="j-end" value="${jar.end}">
+                </div>
+                <button onclick="this.parentElement.remove()" style="color:red; background:none; border:none; margin-top:10px;">✕ 移除錢筒</button>
+            `;
+            area.appendChild(div);
+        });
     }
 
-    function addJarUI(jar = {unit: "$", name: "", goal: "", start: "2026-01", end: "2026-12"}) {
+    function addJarSetup() {
         const area = document.getElementById('jarSetupArea');
         const div = document.createElement('div');
         div.className = "setup-item";
-        div.innerHTML = `
-            <div class="setup-row grid-2">
-                <div><span class="setup-label">單位</span><input type="text" class="j-unit" value="${jar.unit}"></div>
-                <div><span class="setup-label">名稱</span><input type="text" class="j-name" value="${jar.name}"></div>
-            </div>
-            <div class="setup-row"><span class="setup-label">目標金額</span><input type="number" class="j-goal" value="${jar.goal}"></div>
-            <div class="setup-row grid-2">
-                <div><span class="setup-label">開始月份</span><input type="month" class="j-start" value="${jar.start}"></div>
-                <div><span class="setup-label">結束月份</span><input type="month" class="j-end" value="${jar.end}"></div>
-            </div>
-            <button class="btn-delete" onclick="this.parentElement.remove()">✕ 刪除此目標</button>
-        `;
+        div.innerHTML = `<input type="text" class="j-unit" value="$" style="width:50px"> <input type="text" class="j-name" placeholder="名稱"> <input type="number" class="j-goal" placeholder="目標"> <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;"><input type="month" class="j-start" value="2026-01"><input type="month" class="j-end" value="2026-12"></div><button onclick="this.parentElement.remove()" style="color:red; background:none; border:none; margin-top:10px;">✕ 移除</button>`;
         area.appendChild(div);
     }
-
-    function addJarSetup() { addJarUI(); }
 
     function applySettings() {
         const newJars = [];
         document.querySelectorAll('.setup-item').forEach(item => {
-            newJars.push({
-                unit: item.querySelector('.j-unit').value || "$",
-                name: item.querySelector('.j-name').value,
-                goal: Number(item.querySelector('.j-goal').value) || 0,
+            const name = item.querySelector('.j-name').value;
+            if(name) newJars.push({
+                unit: item.querySelector('.j-unit').value,
+                name: name,
+                goal: Number(item.querySelector('.j-goal').value),
                 start: item.querySelector('.j-start').value,
                 end: item.querySelector('.j-end').value
             });
         });
         store.config.title = document.getElementById('set-title').value;
-        store.config.jars = newJars.filter(j => j.name);
+        store.config.jars = newJars;
         saveToDB(); location.reload();
-    }
-
-    function updateUI() {
-        document.getElementById('display-title').innerText = store.config.title;
-        const now = new Date();
-        const list = document.getElementById('jarList');
-        const grid = document.getElementById('inputGrid');
-        list.innerHTML = ""; grid.innerHTML = "";
-        let totalPctSum = 0;
-
-        store.config.jars.forEach(jar => {
-            const start = new Date(jar.start);
-            const end = new Date(jar.end);
-            const totalMonths = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
-            const passedMonths = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
-            const safePassed = Math.max(0, Math.min(passedMonths, totalMonths - 1));
-            const mLeft = Math.max(0, totalMonths - (safePassed + 1));
-            
-            const cur = store.balances[jar.name] || 0;
-            const pct = jar.goal > 0 ? Math.min(Math.round((cur / jar.goal) * 100), 100) : 0;
-            totalPctSum += pct;
-            
-            const targetNow = Math.round((jar.goal / totalMonths) * (safePassed + 1));
-            const gap = targetNow - cur;
-
-            list.innerHTML += `
-                <div class="cat-card">
-                    <div style="display:flex;justify-content:space-between;font-weight:bold;margin-bottom:2px;">
-                        <span>${jar.name}</span>
-                        <span>${jar.unit}${cur.toLocaleString()} / ${jar.goal.toLocaleString()}</span>
-                    </div>
-                    <div style="font-size:10px; color:#999; margin-bottom:5px;">📅 剩餘 ${mLeft} 個月 (到期: ${jar.end})</div>
-                    <div class="prog-container"><div class="prog-text">${pct}%</div><div class="prog-fill" style="width:${pct}%"></div></div>
-                    <div style="font-size:11px; display:flex; justify-content:space-between; margin-top:5px;">
-                        <span style="color:#666;">📍 進度應存: ${jar.unit}${targetNow.toLocaleString()}</span>
-                        <span style="color:${gap > 0 ? 'var(--cat-red)' : 'var(--cat-green)'}; font-weight:bold;">${gap > 0 ? '差 ' + gap.toLocaleString() : '超標 ✨'}</span>
-                    </div>
-                </div>`;
-            
-            grid.innerHTML += `
-                <div style="border-left: 5px solid var(--cat-main); padding-left: 12px;">
-                    <div style="font-size:13px; font-weight:bold; margin-bottom:5px;">${jar.name}</div>
-                    <input type="number" class="record-input" data-name="${jar.name}" placeholder="今日存款金額">
-                </div>`;
-        });
-
-        // 貓咪表情更新
-        const avg = totalPctSum / (store.config.jars.length || 1);
-        const avatar = document.getElementById('cat-avatar');
-        avatar.innerText = avg >= 100 ? "🎊" : avg >= 80 ? "😻" : avg >= 40 ? "😺" : avg > 0 ? "🐱" : "💤";
-        
-        // 月份存錢檢查
-        const curM = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0');
-        const hasSaved = store.history.some(h => h.time.startsWith(curM));
-        const alertEl = document.getElementById('monthly-status');
-        alertEl.className = `status-alert ${hasSaved ? 'status-paid' : 'status-unpaid'}`;
-        alertEl.innerHTML = hasSaved ? "✨ 喵！本月已經存錢了，太讚啦！" : "⚠️ 喵嗚！本月還沒餵食，目標會遲到喔！";
-    }
-
-    function saveRecord() {
-        let any = false;
-        document.querySelectorAll('.record-input').forEach(input => {
-            let val = Number(input.value) || 0;
-            if(val !== 0) {
-                const name = input.dataset.name;
-                store.balances[name] = (store.balances[name] || 0) + val;
-                store.history.unshift({ id: Date.now(), time: new Date().toISOString(), vals: {[name]: val} });
-                any = true;
-            }
-            input.value = "";
-        });
-        if(any) { saveToDB(); updateUI(); alert("存好囉！"); }
-    }
-
-    function exportData() {
-        const blob = new Blob([JSON.stringify(store, null, 2)], { type: "application/json" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `savings_backup.json`;
-        a.click();
-    }
-
-    function importData(e) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            store = JSON.parse(ev.target.result);
-            saveToDB(); location.reload();
-        };
-        reader.readAsText(e.target.files[0]);
     }
 
     function saveToDB() { localStorage.setItem(DB_KEY, JSON.stringify(store)); }
@@ -239,11 +242,10 @@
         if(pId === 'settings') initSettingsPage();
     }
     function cheerUp() {
-        const quotes = ["每一塊錢都是夢想的形狀！", "存錢不是變窮，是把錢變成喜歡的樣子", "貓咪會守護你的錢包喵～", "今天也要加油喔！"];
+        const q = ["每一塊錢都是夢想！", "存錢也是種修行喵～", "今天存了嗎？", "摸摸我有財運！"];
         const b = document.getElementById('cat-bubble');
-        b.innerText = quotes[Math.floor(Math.random()*quotes.length)];
-        b.style.display = 'block';
-        setTimeout(()=> b.style.display='none', 2000);
+        b.innerText = q[Math.floor(Math.random()*q.length)];
+        b.style.display = 'block'; setTimeout(()=> b.style.display='none', 2000);
     }
 
     updateUI();
