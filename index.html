@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🐱 夢想貓咪存錢手帳 V2.1</title>
+    <title>🐱 夢想貓咪存錢手帳 V2.2</title>
     <style>
         :root { --cat-main: #FFB7B2; --cat-bg: #fffaf0; --cat-dark: #5D4037; --cat-gray: #D7CCC8; --cat-red: #ff7675; --cat-green: #55efc4; --cat-blue: #74b9ff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -12,10 +12,10 @@
         .text-center { text-align: center; }
         
         /* 貓咪互動 */
-        .cat-interaction { text-align: center; margin-bottom: 20px; position: relative; cursor: pointer; }
-        .cat-emoji { font-size: 60px; display: block; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .cat-interaction { text-align: center; margin-bottom: 20px; position: relative; cursor: pointer; height: 100px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .cat-emoji { font-size: 60px; display: block; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2; }
         .cat-emoji:active { transform: scale(1.3); }
-        .bubble { position: absolute; background: white; border: 2px solid var(--cat-dark); border-radius: 15px; padding: 8px 12px; font-size: 14px; font-weight: bold; top: -10px; left: 55%; display: none; z-index: 10; width: 150px; }
+        .bubble { position: absolute; background: white; border: 2px solid var(--cat-dark); border-radius: 15px; padding: 8px 12px; font-size: 14px; font-weight: bold; top: 0px; left: 55%; display: none; z-index: 10; width: 150px; box-shadow: 4px 4px 0 var(--cat-gray); }
         
         .cat-card { background: #ffffff; border: 3px solid var(--cat-dark); box-shadow: 6px 6px 0px var(--cat-gray); border-radius: 20px; margin-bottom: 20px; padding: 16px; }
         .status-alert { padding: 10px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; font-size: 14px; border: 2px solid var(--cat-dark); text-align: center; }
@@ -34,15 +34,21 @@
         .page { display: none; }
         .page.active { display: block; }
         
-        /* 設定頁優化 */
-        .setup-item { background: #f9f9f9; padding: 12px; border: 2px solid var(--cat-dark); border-radius: 15px; margin-bottom: 15px; position: relative; }
-        .setup-row-1 { display: grid; grid-template-columns: 60px 1fr 30px; gap: 8px; margin-bottom: 8px; }
-        .setup-row-2 { display: grid; grid-template-columns: 1fr; }
-        .setup-label { font-size: 11px; color: #888; margin-bottom: 2px; display: block; }
+        /* 設定頁格位優化 */
+        .setup-item { background: #fdfdfd; padding: 15px; border: 2px solid var(--cat-dark); border-radius: 15px; margin-bottom: 15px; box-shadow: 4px 4px 0 #eee; }
+        .setup-row-top { display: grid; grid-template-columns: 80px 1fr 40px; gap: 10px; margin-bottom: 12px; }
+        .setup-row-bottom { width: 100%; }
+        .setup-label { font-size: 12px; font-weight: bold; color: var(--cat-dark); margin-bottom: 4px; display: block; }
         
-        input { width: 100%; border: 2px solid var(--cat-dark); border-radius: 8px; padding: 10px; font-size: 15px; background: white; }
-        .btn-main { background: var(--cat-main); border: 2px solid var(--cat-dark); box-shadow: 0 4px 0px var(--cat-dark); font-weight: bold; color: white; border-radius: 12px; padding: 12px; width: 100%; cursor: pointer; margin-top: 10px; }
-        .btn-delete { color: red; background: none; border: none; font-size: 20px; cursor: pointer; }
+        input { width: 100%; border: 2px solid var(--cat-dark); border-radius: 10px; padding: 12px; font-size: 16px; background: white; outline: none; }
+        input:focus { border-color: var(--cat-main); background: #fffcfc; }
+        
+        .btn-main { background: var(--cat-main); border: 2px solid var(--cat-dark); box-shadow: 0 4px 0px var(--cat-dark); font-weight: bold; color: white; border-radius: 12px; padding: 14px; width: 100%; cursor: pointer; margin-top: 10px; font-size: 16px; }
+        .btn-main:active { transform: translateY(2px); box-shadow: 0 2px 0px var(--cat-dark); }
+        .btn-delete { color: #ff7675; background: #fff; border: 2px solid #ff7675; border-radius: 8px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; height: 45px; margin-top: 20px; }
+        
+        .backup-section { margin-top: 30px; padding-top: 20px; border-top: 2px dashed var(--cat-gray); }
+        .btn-outline { background: white; color: var(--cat-dark); border: 2px solid var(--cat-dark); font-size: 14px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -53,47 +59,58 @@
             <div id="cat-bubble" class="bubble">喵嗚？</div>
             <span id="cat-avatar" class="cat-emoji">💤</span>
         </div>
-        <h1 id="display-title" class="text-center" style="color: #FF748C; margin: 0 0 15px 0;">夢想計畫</h1>
+        
+        <h1 id="display-title" class="text-center" style="color: #FF748C; margin: 0 0 15px 0; font-size: 24px;">載入中...</h1>
         <div id="monthly-status" class="status-alert"></div>
         
         <div class="cat-card" style="background: #2d3436; color: white;">
             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom:5px;">
-                <span>⏳ 剩餘達標時間</span>
+                <span>⏳ 距離結束還有</span>
                 <span id="mLeft" style="color: #fdcb6e; font-weight: bold;">--</span>
             </div>
             <div class="prog-container" style="background: #636e72; border-color: white; height: 10px;">
                 <div id="timeBar" class="prog-fill" style="background: #fdcb6e; border:none;"></div>
             </div>
         </div>
+
         <div id="jarList"></div>
+
         <div class="cat-card" style="background: #fff5f5;">
-            <h3 class="text-center" style="margin:0 0 10px 0">🐟 快速記帳</h3>
+            <h3 class="text-center" style="margin:0 0 15px 0">🐟 快速餵食 (存錢)</h3>
             <div id="inputGrid" style="display: grid; grid-template-columns: 1fr; gap: 15px;"></div>
             <button id="submit-btn" onclick="saveRecord()" class="btn-main">確認存入 🐟</button>
         </div>
     </div>
 
     <div id="page-settings" class="page">
-        <h2 class="text-center">⚙️ 計畫設定</h2>
+        <h2 class="text-center">⚙️ 計畫核心設定</h2>
         <div class="cat-card">
-            <label><b>計畫標題</b></label>
-            <input type="text" id="set-title" style="margin-bottom:15px">
+            <label class="setup-label">✏️ 計畫標題</label>
+            <input type="text" id="set-title" style="margin-bottom:20px" placeholder="例如：2026 圓夢計畫">
             
-            <label><b>計畫期間</b></label>
-            <div style="display: flex; gap: 8px; margin-bottom:20px">
+            <label class="setup-label">📅 計畫期間 (從...到...)</label>
+            <div style="display: flex; gap: 10px; margin-bottom:25px">
                 <input type="month" id="set-start">
                 <input type="month" id="set-end">
             </div>
 
-            <label><b>存錢筒配置</b></label>
+            <label class="setup-label">💰 存錢筒詳細配置</label>
             <div id="jarSetupArea"></div>
-            <button onclick="addJarSetup()" class="btn-main" style="background:#fff; color:var(--cat-dark); border-style:dashed">+ 增加新錢筒</button>
             
-            <button onclick="applySettings()" class="btn-main" style="margin-top:25px; background:var(--cat-green); font-size:18px">儲存並套用設定 ✨</button>
+            <button onclick="addJarSetup()" class="btn-main" style="background:#fff; color:var(--cat-dark); border-style:dashed; margin-bottom: 20px;">+ 增加存錢筒</button>
+            
+            <button onclick="applySettings()" class="btn-main" style="background:var(--cat-green); font-size:18px; box-shadow: 0 4px 0 #2b8a3e;">儲存並套用設定 ✨</button>
+
+            <div class="backup-section">
+                <h4 style="margin: 0 0 15px 0;">💾 數據保險箱</h4>
+                <button onclick="exportData()" class="btn-main btn-outline">📤 匯出資料備份 (.json)</button>
+                <button onclick="document.getElementById('fileInput').click()" class="btn-main btn-outline">📥 匯入資料還原</button>
+                <input type="file" id="fileInput" style="display:none" onchange="importData(event)" accept=".json">
+                <p style="font-size: 11px; color: #999; text-align: center;">建議每月備份一次，確保資料不遺失。</p>
+            </div>
         </div>
     </div>
-
-    </div>
+</div>
 
 <nav class="nav-bar">
     <button class="nav-item active" onclick="showPage('home', this)"><span class="nav-icon">🏠</span></button>
@@ -101,12 +118,13 @@
 </nav>
 
 <script>
-    const DB_KEY = 'cat_universal_v7';
+    const DB_KEY = 'cat_dream_v8';
     let store = JSON.parse(localStorage.getItem(DB_KEY)) || {
         config: { title: "我的存錢計畫", start: "2026-01", end: "2026-12", jars: [{ unit: "$", name: "旅遊基金", goal: 50000 }] },
         balances: {}, history: []
     };
 
+    // 初始載入
     function initSettingsPage() {
         document.getElementById('set-title').value = store.config.title;
         document.getElementById('set-start').value = store.config.start;
@@ -121,13 +139,20 @@
         const div = document.createElement('div');
         div.className = "setup-item";
         div.innerHTML = `
-            <div class="setup-row-1">
-                <div><span class="setup-label">單位</span><input type="text" value="${unit}" placeholder="$"></div>
-                <div><span class="setup-label">錢筒名稱</span><input type="text" value="${name}" placeholder="例如：買相機"></div>
-                <div><span class="setup-label">&nbsp;</span><button class="btn-delete" onclick="this.parentElement.parentElement.parentElement.remove()">✕</button></div>
+            <div class="setup-row-top">
+                <div>
+                    <span class="setup-label">單位</span>
+                    <input type="text" value="${unit}" placeholder="$" style="text-align:center">
+                </div>
+                <div>
+                    <span class="setup-label">存錢筒名稱</span>
+                    <input type="text" value="${name}" placeholder="例如：買筆電">
+                </div>
+                <button class="btn-delete" onclick="this.parentElement.parentElement.remove()">✕</button>
             </div>
-            <div class="setup-row-2">
-                <div><span class="setup-label">目標金額 (Goal)</span><input type="number" value="${goal}" placeholder="0"></div>
+            <div class="setup-row-bottom">
+                <span class="setup-label">目標總金額 (大格子好輸入)</span>
+                <input type="number" value="${goal}" placeholder="請輸入目標金額">
             </div>
         `;
         area.appendChild(div);
@@ -139,13 +164,19 @@
         const newJars = [];
         document.querySelectorAll('.setup-item').forEach(item => {
             const inputs = item.querySelectorAll('input');
-            if(inputs[1].value) newJars.push({ unit: inputs[0].value || "$", name: inputs[1].value, goal: Number(inputs[2].value) || 0 });
+            if(inputs[1].value) {
+                newJars.push({ 
+                    unit: inputs[0].value || "$", 
+                    name: inputs[1].value, 
+                    goal: Number(inputs[2].value) || 0 
+                });
+            }
         });
         store.config.title = document.getElementById('set-title').value;
         store.config.start = document.getElementById('set-start').value;
         store.config.end = document.getElementById('set-end').value;
         store.config.jars = newJars;
-        localStorage.setItem(DB_KEY, JSON.stringify(store));
+        saveToDB();
         location.reload();
     }
 
@@ -155,7 +186,7 @@
         const start = new Date(store.config.start);
         const end = new Date(store.config.end);
 
-        // 正確的 12 個月計算邏輯 (修正版)
+        // 月份計算修正 (1月到12月應為12個月)
         const totalMonths = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
         const passedMonths = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
         const safePassed = Math.max(0, Math.min(passedMonths, totalMonths - 1));
@@ -167,71 +198,111 @@
         const grid = document.getElementById('inputGrid');
         list.innerHTML = ""; grid.innerHTML = "";
 
+        let totalProgress = 0;
+
         store.config.jars.forEach(jar => {
             const cur = store.balances[jar.name] || 0;
-            const pct = Math.min(Math.round((cur / jar.goal) * 100), 100);
+            const pct = jar.goal > 0 ? Math.min(Math.round((cur / jar.goal) * 100), 100) : 0;
+            totalProgress += pct;
             const targetNow = Math.round((jar.goal / totalMonths) * (safePassed + 1));
             const gap = targetNow - cur;
 
             list.innerHTML += `
                 <div class="cat-card">
-                    <div style="display:flex;justify-content:space-between;font-weight:bold;">
+                    <div style="display:flex;justify-content:space-between;font-weight:bold;margin-bottom:5px;">
                         <span>${jar.name}</span>
                         <span>${jar.unit}${cur.toLocaleString()} / ${jar.goal.toLocaleString()}</span>
                     </div>
                     <div class="prog-container"><div class="prog-text">${pct}%</div><div class="prog-fill" style="width:${pct}%"></div></div>
-                    <div style="font-size:11px; color:#666; display:flex; justify-content:space-between;">
+                    <div style="font-size:11px; color:#666; display:flex; justify-content:space-between; margin-top:5px;">
                         <span>📍 進度應存: ${jar.unit}${targetNow.toLocaleString()}</span>
-                        <span style="color:${gap > 0 ? 'var(--cat-red)' : 'var(--cat-green)'}; font-weight:bold;">${gap > 0 ? '差 ' + gap.toLocaleString() : '超標了 ✨'}</span>
+                        <span style="color:${gap > 0 ? 'var(--cat-red)' : 'var(--cat-green)'}; font-weight:bold;">${gap > 0 ? '還差 ' + gap.toLocaleString() : '超前進度 ✨'}</span>
                     </div>
                 </div>`;
             
             grid.innerHTML += `
-                <div style="border-left: 4px solid var(--cat-main); padding-left: 10px;">
-                    <div style="font-size:12px; font-weight:bold; margin-bottom:5px;">${jar.name} (${jar.unit})</div>
-                    <input type="number" class="record-input" data-name="${jar.name}" placeholder="輸入金額...">
+                <div style="border-left: 5px solid var(--cat-main); padding-left: 12px; margin-bottom: 5px;">
+                    <div style="font-size:13px; font-weight:bold; margin-bottom:5px;">${jar.name} (${jar.unit})</div>
+                    <input type="number" class="record-input" data-name="${jar.name}" placeholder="今天存多少？">
                 </div>`;
         });
         
-        // 貓咪表情與月份提醒邏輯同前
+        // 貓咪表情與狀態
         const currentMonthStr = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0');
-        const hasSaved = store.history.some(h => h.time.startsWith(currentMonthStr) && h.type === 'save');
+        const hasSaved = store.history.some(h => h.time.startsWith(currentMonthStr));
         const alertEl = document.getElementById('monthly-status');
         alertEl.className = `status-alert ${hasSaved ? 'status-paid' : 'status-unpaid'}`;
-        alertEl.innerHTML = hasSaved ? "✨ 喵！本月目標達成，好棒！" : "⚠️ 喵嗚... 這個月還沒餵錢筒喔！";
+        alertEl.innerHTML = hasSaved ? "✨ 喵！本月已經存過錢了，好勤勞！" : "⚠️ 喵嗚... 這個月還沒餵食，肚子餓了。";
         
-        // 更新貓咪表情
-        const avgPct = store.config.jars.reduce((acc, j) => acc + (store.balances[j.name] || 0) / j.goal, 0) / (store.config.jars.length || 1) * 100;
+        const avgPct = totalProgress / (store.config.jars.length || 1);
         const avatar = document.getElementById('cat-avatar');
         avatar.innerText = avgPct >= 100 ? "🎊" : avgPct >= 80 ? "😻" : avgPct >= 40 ? "😺" : avgPct > 0 ? "🐱" : "💤";
     }
 
-    // 其餘 saveRecord, showPage 等功能保持不變...
+    function saveRecord() {
+        let hasAnyValue = false;
+        document.querySelectorAll('.record-input').forEach(input => {
+            let val = Number(input.value) || 0;
+            if(val !== 0) {
+                const name = input.dataset.name;
+                store.balances[name] = (store.balances[name] || 0) + val;
+                store.history.unshift({ id: Date.now(), time: new Date().toISOString(), vals: {[name]: val} });
+                hasAnyValue = true;
+            }
+            input.value = "";
+        });
+        if(hasAnyValue) {
+            saveToDB();
+            updateUI();
+            alert("存入成功！夢想又近了一步喵！");
+        }
+    }
+
+    // 匯出功能
+    function exportData() {
+        const dataStr = JSON.stringify(store, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `cat_savings_backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // 匯入功能
+    function importData(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const imported = JSON.parse(event.target.result);
+                if (imported.config && imported.balances) {
+                    if (confirm("匯入將覆蓋現有資料，確定嗎？")) {
+                        store = imported;
+                        saveToDB();
+                        location.reload();
+                    }
+                } else { alert("檔案格式不正確！"); }
+            } catch (err) { alert("讀取失敗，請確保是正確的 JSON 檔案。"); }
+        };
+        reader.readAsText(file);
+    }
+
+    function saveToDB() { localStorage.setItem(DB_KEY, JSON.stringify(store)); }
     function showPage(pId, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-bar .nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById('page-' + pId).classList.add('active');
         if(el) el.classList.add('active');
         if(pId === 'settings') initSettingsPage();
+        window.scrollTo(0,0);
     }
-    
-    function saveRecord() {
-        document.querySelectorAll('.record-input').forEach(input => {
-            let val = Number(input.value) || 0;
-            if(val !== 0) {
-                const name = input.dataset.name;
-                store.balances[name] = (store.balances[name] || 0) + val;
-                store.history.unshift({ id: Date.now(), time: new Date().toISOString(), vals: {[name]: val}, type: 'save' });
-            }
-            input.value = "";
-        });
-        localStorage.setItem(DB_KEY, JSON.stringify(store));
-        updateUI();
-        alert("存好囉！喵！");
-    }
-
     function cheerUp() {
-        const quotes = ["再存一點就能買小魚乾了！", "錢錢沒有不見，只是變成了貓貓的形狀", "每一塊錢都是夢想的種子喵！", "今天的你也超認真喔！"];
+        const quotes = ["再存一點就能買小魚乾了！", "錢錢沒有不見，只是變成了貓貓的形狀", "每一塊錢都是夢想的種子喵！", "摸摸我，財運滾滾來～"];
         const b = document.getElementById('cat-bubble');
         b.innerText = quotes[Math.floor(Math.random()*quotes.length)];
         b.style.display = 'block';
