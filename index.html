@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>🐱 萬用智慧存錢手帳</title>
     <style>
-        :root { --cat-main: #FFB7B2; --cat-bg: #fffaf0; --cat-dark: #5D4037; --cat-gray: #D7CCC8; --cat-red: #ff7675; --cat-blue: #74b9ff; }
+        :root { --cat-main: #FFB7B2; --cat-bg: #fffaf0; --cat-dark: #5D4037; --cat-gray: #D7CCC8; --cat-red: #ff7675; --cat-blue: #74b9ff; --cat-green: #55efc4; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: -apple-system, sans-serif; background-color: var(--cat-bg); color: var(--cat-dark); margin: 0; padding: 0 0 100px 0; }
         .container { max-width: 450px; margin: 0 auto; padding: 20px; }
@@ -19,10 +19,16 @@
         .prog-fill { height: 100%; transition: width 1s ease; background: var(--cat-main); border-right: 2px solid var(--cat-dark); }
         .prog-text { position: absolute; width: 100%; text-align: center; font-size: 12px; font-weight: bold; line-height: 22px; z-index: 5; }
 
-        /* 輸入框與按鈕 */
+        /* 輸入與切換鈕 */
         .input-group { margin-bottom: 12px; }
         label { font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px; }
         input, select, textarea { width: 100%; border: 2px solid var(--cat-gray); border-radius: 10px; padding: 10px; font-size: 15px; outline: none; }
+        
+        .mode-switch { display: flex; background: #eee; border-radius: 12px; padding: 4px; margin-bottom: 15px; border: 2px solid var(--cat-dark); }
+        .mode-btn { flex: 1; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; background: none; color: #999; }
+        .mode-btn.active { background: white; color: var(--cat-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .mode-btn.active.spend { color: var(--cat-red); }
+
         .btn-main { background: var(--cat-main); border: 2px solid var(--cat-dark); box-shadow: 0 4px 0px var(--cat-dark); font-weight: bold; color: white; border-radius: 12px; padding: 12px; width: 100%; cursor: pointer; }
         .btn-main:active { transform: translateY(2px); box-shadow: 0 2px 0px var(--cat-dark); }
 
@@ -37,6 +43,8 @@
         .setup-row { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 5px; margin-bottom: 8px; align-items: center; }
         .history-row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 10px 0; font-size: 12px; }
         .suggest-tip { font-size: 10px; color: #888; margin-bottom: 2px; display: block; }
+        .badge-spend { background: var(--cat-red); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-right: 4px; }
+        .badge-save { background: var(--cat-green); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-right: 4px; }
     </style>
 </head>
 <body>
@@ -50,9 +58,15 @@
         </div>
         <div id="jarList"></div>
         <div class="cat-card" style="background: #fff5f5;">
-            <h3 class="text-center" style="margin:0 0 10px 0">🍼 餵食紀錄</h3>
+            <h3 class="text-center" style="margin:0 0 10px 0">🍼 帳務調整</h3>
+            
+            <div class="mode-switch">
+                <button id="btn-save-mode" class="mode-btn active" onclick="setMode('save')">存款 🐟</button>
+                <button id="btn-spend-mode" class="mode-btn" onclick="setMode('spend')">支出 💸</button>
+            </div>
+
             <div id="inputGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"></div>
-            <button onclick="saveRecord()" class="btn-main" style="margin-top:15px">確認存入 🐟</button>
+            <button id="submit-btn" onclick="saveRecord()" class="btn-main" style="margin-top:15px">確認存入 🐟</button>
         </div>
     </div>
 
@@ -86,7 +100,7 @@
     </div>
 
     <div id="page-history" class="page">
-        <h2 class="text-center">📜 存款紀錄</h2>
+        <h2 class="text-center">📜 歷史紀錄簿</h2>
         <div class="cat-card" id="historyList"></div>
     </div>
 </div>
@@ -99,9 +113,9 @@
 </nav>
 
 <script>
-    const DB_KEY = 'cat_universal_v2';
+    const DB_KEY = 'cat_universal_v3'; // 更新版本號以避免舊衝突
+    let currentMode = 'save';
     
-    // 預設只有一個存錢筒
     let defaultData = {
         config: {
             title: "我的存錢計畫",
@@ -115,6 +129,25 @@
     };
 
     let store = JSON.parse(localStorage.getItem(DB_KEY)) || defaultData;
+
+    function setMode(mode) {
+        currentMode = mode;
+        const btnSave = document.getElementById('btn-save-mode');
+        const btnSpend = document.getElementById('btn-spend-mode');
+        const submitBtn = document.getElementById('submit-btn');
+        
+        if(mode === 'save') {
+            btnSave.classList.add('active');
+            btnSpend.classList.remove('active', 'spend');
+            submitBtn.innerText = "確認存入 🐟";
+            submitBtn.style.background = "var(--cat-main)";
+        } else {
+            btnSpend.classList.add('active', 'spend');
+            btnSave.classList.remove('active');
+            submitBtn.innerText = "執行支出扣除 💸";
+            submitBtn.style.background = "var(--cat-red)";
+        }
+    }
 
     function showPage(pId, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -157,20 +190,15 @@
         document.querySelectorAll('#jarSetupArea .setup-row').forEach(row => {
             const inputs = row.querySelectorAll('input');
             if(inputs[0].value) {
-                newJars.push({
-                    name: inputs[0].value,
-                    goal: Number(inputs[1].value) || 0
-                });
+                newJars.push({ name: inputs[0].value, goal: Number(inputs[1].value) || 0 });
             }
         });
         if(newJars.length === 0) { alert("至少要有一個存錢筒喔！"); return; }
-        
         store.config.title = document.getElementById('set-title').value;
         store.config.start = document.getElementById('set-start').value;
         store.config.end = document.getElementById('set-end').value;
         store.config.jars = newJars;
         saveToDB();
-        alert("設定已套用！");
         location.reload();
     }
 
@@ -181,7 +209,7 @@
         const now = new Date();
 
         let mLeft = (end.getFullYear() - now.getFullYear()) * 12 + (end.getMonth() - now.getMonth());
-        mLeft = Math.max(mLeft, 1); // 至少剩一個月，避免除以0
+        mLeft = Math.max(mLeft, 1);
         document.getElementById('mLeft').innerText = mLeft + " 個月";
         
         let timePct = Math.min(Math.max(((now - start) / (end - start)) * 100, 0), 100);
@@ -195,8 +223,6 @@
             const cur = store.balances[jar.name] || 0;
             const pct = Math.min(Math.round((cur / jar.goal) * 100), 100);
             const unit = jar.name.includes("日幣") ? "¥" : "$";
-            
-            // 計算每月應存 (剩餘目標 / 剩餘月數)
             const suggest = Math.ceil((jar.goal - cur) / mLeft);
             const finalSuggest = suggest > 0 ? suggest : 0;
 
@@ -220,12 +246,14 @@
     }
 
     function saveRecord() {
-        let entry = { id: Date.now(), time: new Date().toLocaleString(), vals: {} };
+        let entry = { id: Date.now(), time: new Date().toLocaleString(), vals: {}, type: currentMode };
         let hasValue = false;
         document.querySelectorAll('.record-input').forEach(input => {
-            const val = Number(input.value) || 0;
+            let val = Number(input.value) || 0;
             if(val !== 0) {
                 const name = input.dataset.name;
+                // 如果是支出模式，自動將數值轉為負數
+                if(currentMode === 'spend') val = -Math.abs(val);
                 store.balances[name] = (store.balances[name] || 0) + val;
                 entry.vals[name] = val;
                 hasValue = true;
@@ -234,7 +262,7 @@
         });
         if(hasValue) {
             store.history.unshift(entry);
-            saveToDB(); updateUI(); alert("已成功存入！");
+            saveToDB(); updateUI(); alert(currentMode === 'save' ? "已成功存入！" : "支出已扣除！");
         }
     }
 
@@ -244,19 +272,25 @@
         hList.innerHTML = store.history.map(item => `
             <div class="history-row">
                 <div>
-                    <div style="color:#999;font-size:10px;">${item.time}</div>
-                    <div>${Object.entries(item.vals).map(([k,v]) => `${k}: ${v}`).join(", ")}</div>
+                    <div style="color:#999;font-size:10px;margin-bottom:2px;">
+                        <span class="${item.type === 'spend' ? 'badge-spend' : 'badge-save'}">${item.type === 'spend' ? '支出' : '存款'}</span>
+                        ${item.time}
+                    </div>
+                    <div style="font-weight:bold;">${Object.entries(item.vals).map(([k,v]) => `${k}: ${v.toLocaleString()}`).join(", ")}</div>
                 </div>
                 <button onclick="deleteItem(${item.id})" style="background:none; border:none; color:red; font-size:16px;">🗑️</button>
             </div>`).join("");
     }
 
     function deleteItem(id) {
-        if(!confirm("確定刪除這筆紀錄？金額會扣掉喔！")) return;
+        if(!confirm("確定刪除這筆紀錄？刪除支出會補回餘額，刪除存款會扣掉餘額喔！")) return;
         const idx = store.history.findIndex(i => i.id === id);
         if(idx > -1) {
             const item = store.history[idx];
-            Object.entries(item.vals).forEach(([k, v]) => store.balances[k] -= v);
+            // 刪除紀錄時，將原本的操作「反向」執行回去
+            Object.entries(item.vals).forEach(([k, v]) => {
+                store.balances[k] = (store.balances[k] || 0) - v;
+            });
             store.history.splice(idx, 1);
             saveToDB(); updateUI(); renderHistory();
         }
@@ -272,19 +306,16 @@
         const blob = new Blob([JSON.stringify(store)], {type: "application/json"});
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        a.href = url; a.download = `my_savings_backup.json`; a.click();
+        a.href = url; a.download = `saving_backup.json`; a.click();
     }
     function importData(e) {
         const reader = new FileReader();
         reader.onload = (event) => {
-            try {
-                store = JSON.parse(event.target.result);
-                saveToDB(); location.reload();
-            } catch(e) { alert("檔案格式錯誤！"); }
+            try { store = JSON.parse(event.target.result); saveToDB(); location.reload(); } catch(e) { alert("格式錯誤！"); }
         };
         reader.readAsText(e.target.files[0]);
     }
-    function fullReset() { if(confirm("確定要重置嗎？所有紀錄都會消失！")) { localStorage.removeItem(DB_KEY); location.reload(); } }
+    function fullReset() { if(confirm("確定要徹底重置嗎？")) { localStorage.removeItem(DB_KEY); location.reload(); } }
 
     updateUI();
 </script>
