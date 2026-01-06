@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>🐱 萬用存錢手帳</title>
+    <title>🐱 萬用智慧存錢手帳</title>
     <style>
         :root { --cat-main: #FFB7B2; --cat-bg: #fffaf0; --cat-dark: #5D4037; --cat-gray: #D7CCC8; --cat-red: #ff7675; --cat-blue: #74b9ff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -34,33 +34,33 @@
         .page { display: none; }
         .page.active { display: block; }
         
-        /* 預算與設定樣式 */
-        .setup-row { display: grid; grid-template-columns: 1fr 1fr 80px; gap: 5px; margin-bottom: 8px; }
+        .setup-row { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 5px; margin-bottom: 8px; align-items: center; }
         .history-row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 10px 0; font-size: 12px; }
+        .suggest-tip { font-size: 10px; color: #888; margin-bottom: 2px; display: block; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="page-home" class="page active">
-        <h1 id="display-title" class="text-center" style="color: #FF748C;">🐾 我的存錢計畫</h1>
+        <h1 id="display-title" class="text-center" style="color: #FF748C;">🐾 夢想計畫</h1>
         <div class="cat-card" style="background: #2d3436; color: white; border-color: #2d3436;">
-            <div style="display: flex; justify-content: space-between; font-size: 12px;"><span>距離目標剩餘</span><span id="mLeft" style="color: #fdcb6e; font-weight: bold;">-- 個月</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px;"><span>剩餘達標時間</span><span id="mLeft" style="color: #fdcb6e; font-weight: bold;">-- 個月</span></div>
             <div class="prog-container" style="background: #636e72; border-color: white; height: 10px;"><div id="timeBar" class="prog-fill" style="background: #fdcb6e; border:none;"></div></div>
         </div>
         <div id="jarList"></div>
-        <div class="cat-card">
+        <div class="cat-card" style="background: #fff5f5;">
             <h3 class="text-center" style="margin:0 0 10px 0">🍼 餵食紀錄</h3>
-            <div id="inputGrid" class="setup-row" style="grid-template-columns: 1fr 1fr;"></div>
-            <button onclick="saveRecord()" class="btn-main" style="margin-top:10px">確認存入</button>
+            <div id="inputGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"></div>
+            <button onclick="saveRecord()" class="btn-main" style="margin-top:15px">確認存入 🐟</button>
         </div>
     </div>
 
     <div id="page-budget" class="page">
-        <h2 class="text-center">📝 預算規劃表</h2>
+        <h2 class="text-center">📝 預算規劃筆記</h2>
         <div class="cat-card">
-            <textarea id="budget-content" style="height: 300px; font-family: monospace; font-size: 14px; line-height: 1.6;" placeholder="在此輸入你的預算規劃..."></textarea>
-            <button onclick="saveBudget()" class="btn-main" style="margin-top:10px; background:var(--cat-blue)">儲存規劃內容</button>
+            <textarea id="budget-content" style="height: 350px; font-family: monospace; font-size: 14px; line-height: 1.6; background: #fffcf5;" placeholder="在此輸入你的詳細預算清單..."></textarea>
+            <button onclick="saveBudget()" class="btn-main" style="margin-top:10px; background:var(--cat-blue)">儲存筆記內容</button>
         </div>
     </div>
 
@@ -69,19 +69,19 @@
         <div class="cat-card">
             <div class="input-group"><label>計畫標題</label><input type="text" id="set-title"></div>
             <div class="input-group"><label>開始日期</label><input type="month" id="set-start"></div>
-            <div class="input-group"><label>目標日期</label><input type="month" id="set-end"></div>
-            <hr>
-            <label>存錢筒配置 (名稱 / 目標金額 / 每月應存)</label>
+            <div class="input-group"><label>目標日期 (存到哪時候)</label><input type="month" id="set-end"></div>
+            <hr style="border: 1px dashed var(--cat-gray); margin: 20px 0;">
+            <label>存錢筒配置 (名稱 / 總目標金額)</label>
             <div id="jarSetupArea"></div>
-            <button onclick="addJarSetup()" class="btn-small" style="margin-bottom:10px">+ 增加存錢筒</button>
-            <button onclick="applySettings()" class="btn-main">套用並重新開始計畫</button>
+            <button onclick="addJarSetup()" class="btn-main" style="background:#fff; color:var(--cat-dark); font-size:12px; padding:5px; margin-top:5px">+ 增加新的存錢筒</button>
+            <button onclick="applySettings()" class="btn-main" style="margin-top:20px; background:#55efc4">套用設定</button>
         </div>
         <div class="cat-card" style="background:#eee">
-            <h3>💾 數據管理</h3>
-            <button onclick="exportData()" class="btn-small">匯出備份 (.json)</button>
-            <button onclick="document.getElementById('fileInput').click()" class="btn-small">匯入備份</button>
+            <h3 style="margin-top:0">💾 數據管理</h3>
+            <button onclick="exportData()" class="btn-main" style="background:var(--cat-blue); font-size:14px; margin-bottom:10px">匯出備份檔 (.json)</button>
+            <button onclick="document.getElementById('fileInput').click()" class="btn-main" style="background:#fff; color:var(--cat-dark); font-size:14px;">匯入備份檔</button>
             <input type="file" id="fileInput" style="display:none" onchange="importData(event)">
-            <button onclick="fullReset()" style="color:red; background:none; border:none; font-size:10px; margin-top:10px">⚠️ 徹底清空所有紀錄</button>
+            <button onclick="fullReset()" style="width:100%; background:none; border:none; color:red; font-size:10px; margin-top:20px">⚠️ 徹底重置並清空所有數據</button>
         </div>
     </div>
 
@@ -99,22 +99,19 @@
 </nav>
 
 <script>
-    const DB_KEY = 'cat_universal_v1';
+    const DB_KEY = 'cat_universal_v2';
     
-    // 預設初始資料
+    // 預設只有一個存錢筒
     let defaultData = {
         config: {
-            title: "2035 環島計畫",
-            start: "2026-03",
-            end: "2035-10",
-            jars: [
-                { name: "年度台幣", goal: 10800, monthly: 900, unit: "$" },
-                { name: "年度日幣", goal: 50400, monthly: 4200, unit: "¥" }
-            ]
+            title: "我的存錢計畫",
+            start: "2024-01",
+            end: "2025-12",
+            jars: [{ name: "存款金", goal: 10000 }]
         },
         balances: {},
         history: [],
-        budgetText: "在此輸入你的預算規劃..."
+        budgetText: ""
     };
 
     let store = JSON.parse(localStorage.getItem(DB_KEY)) || defaultData;
@@ -136,43 +133,44 @@
         const area = document.getElementById('jarSetupArea');
         area.innerHTML = "";
         store.config.jars.forEach((jar, index) => {
-            area.innerHTML += `
-                <div class="setup-row" id="setup-row-${index}">
-                    <input type="text" value="${jar.name}" placeholder="名稱">
-                    <input type="number" value="${jar.goal}" placeholder="總目標">
-                    <button onclick="removeJarSetup(${index})" style="background:none; border:none; color:red">✕</button>
-                </div>`;
+            const div = document.createElement('div');
+            div.className = "setup-row";
+            div.innerHTML = `
+                <input type="text" value="${jar.name}" placeholder="名稱">
+                <input type="number" value="${jar.goal}" placeholder="目標金額">
+                <button onclick="this.parentElement.remove()" style="background:none; border:none; color:red; font-weight:bold;">✕</button>
+            `;
+            area.appendChild(div);
         });
     }
 
     function addJarSetup() {
         const area = document.getElementById('jarSetupArea');
-        const idx = area.children.length;
         const div = document.createElement('div');
         div.className = "setup-row";
-        div.id = `setup-row-${idx}`;
-        div.innerHTML = `<input type="text" placeholder="名稱"> <input type="number" placeholder="總目標"> <button onclick="this.parentElement.remove()" style="background:none; border:none; color:red">✕</button>`;
+        div.innerHTML = `<input type="text" placeholder="名稱"> <input type="number" placeholder="目標金額"> <button onclick="this.parentElement.remove()" style="background:none; border:none; color:red; font-weight:bold;">✕</button>`;
         area.appendChild(div);
     }
 
     function applySettings() {
-        if(!confirm("套用新設定將會保留紀錄，但會重新計算進度條，確定嗎？")) return;
         const newJars = [];
         document.querySelectorAll('#jarSetupArea .setup-row').forEach(row => {
             const inputs = row.querySelectorAll('input');
             if(inputs[0].value) {
                 newJars.push({
                     name: inputs[0].value,
-                    goal: Number(inputs[1].value) || 0,
-                    unit: inputs[0].value.includes("日幣") ? "¥" : "$"
+                    goal: Number(inputs[1].value) || 0
                 });
             }
         });
+        if(newJars.length === 0) { alert("至少要有一個存錢筒喔！"); return; }
+        
         store.config.title = document.getElementById('set-title').value;
         store.config.start = document.getElementById('set-start').value;
         store.config.end = document.getElementById('set-end').value;
         store.config.jars = newJars;
         saveToDB();
+        alert("設定已套用！");
         location.reload();
     }
 
@@ -183,7 +181,9 @@
         const now = new Date();
 
         let mLeft = (end.getFullYear() - now.getFullYear()) * 12 + (end.getMonth() - now.getMonth());
-        document.getElementById('mLeft').innerText = (mLeft > 0 ? mLeft : 0) + " 個月";
+        mLeft = Math.max(mLeft, 1); // 至少剩一個月，避免除以0
+        document.getElementById('mLeft').innerText = mLeft + " 個月";
+        
         let timePct = Math.min(Math.max(((now - start) / (end - start)) * 100, 0), 100);
         document.getElementById('timeBar').style.width = timePct + '%';
 
@@ -194,17 +194,28 @@
         store.config.jars.forEach(jar => {
             const cur = store.balances[jar.name] || 0;
             const pct = Math.min(Math.round((cur / jar.goal) * 100), 100);
+            const unit = jar.name.includes("日幣") ? "¥" : "$";
+            
+            // 計算每月應存 (剩餘目標 / 剩餘月數)
+            const suggest = Math.ceil((jar.goal - cur) / mLeft);
+            const finalSuggest = suggest > 0 ? suggest : 0;
+
             list.innerHTML += `
                 <div class="cat-card">
                     <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:bold;">
-                        <span>${jar.name}</span><span>${jar.unit}${cur.toLocaleString()} / ${jar.goal.toLocaleString()}</span>
+                        <span>${jar.name}</span><span>${unit}${cur.toLocaleString()} / ${jar.goal.toLocaleString()}</span>
                     </div>
                     <div class="prog-container">
                         <div class="prog-text">${pct}%</div>
                         <div class="prog-fill" style="width:${pct}%"></div>
                     </div>
                 </div>`;
-            grid.innerHTML += `<div><small>${jar.name}</small><input type="number" class="record-input" data-name="${jar.name}"></div>`;
+            
+            grid.innerHTML += `
+                <div>
+                    <span class="suggest-tip">💡 建議月存: ${unit}${finalSuggest.toLocaleString()}</span>
+                    <input type="number" class="record-input" data-name="${jar.name}" placeholder="${jar.name}">
+                </div>`;
         });
     }
 
@@ -223,9 +234,7 @@
         });
         if(hasValue) {
             store.history.unshift(entry);
-            saveToDB();
-            updateUI();
-            alert("存入成功！");
+            saveToDB(); updateUI(); alert("已成功存入！");
         }
     }
 
@@ -238,12 +247,12 @@
                     <div style="color:#999;font-size:10px;">${item.time}</div>
                     <div>${Object.entries(item.vals).map(([k,v]) => `${k}: ${v}`).join(", ")}</div>
                 </div>
-                <button onclick="deleteItem(${item.id})" style="background:none; border:none; color:red">🗑️</button>
+                <button onclick="deleteItem(${item.id})" style="background:none; border:none; color:red; font-size:16px;">🗑️</button>
             </div>`).join("");
     }
 
     function deleteItem(id) {
-        if(!confirm("確定刪除？")) return;
+        if(!confirm("確定刪除這筆紀錄？金額會扣掉喔！")) return;
         const idx = store.history.findIndex(i => i.id === id);
         if(idx > -1) {
             const item = store.history[idx];
@@ -255,8 +264,7 @@
 
     function saveBudget() {
         store.budgetText = document.getElementById('budget-content').value;
-        saveToDB();
-        alert("預算規劃已儲存！");
+        saveToDB(); alert("預算筆記已儲存！");
     }
 
     function saveToDB() { localStorage.setItem(DB_KEY, JSON.stringify(store)); }
@@ -264,17 +272,19 @@
         const blob = new Blob([JSON.stringify(store)], {type: "application/json"});
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        a.href = url; a.download = `backup_${store.config.title}.json`; a.click();
+        a.href = url; a.download = `my_savings_backup.json`; a.click();
     }
     function importData(e) {
         const reader = new FileReader();
         reader.onload = (event) => {
-            store = JSON.parse(event.target.result);
-            saveToDB(); location.reload();
+            try {
+                store = JSON.parse(event.target.result);
+                saveToDB(); location.reload();
+            } catch(e) { alert("檔案格式錯誤！"); }
         };
         reader.readAsText(e.target.files[0]);
     }
-    function fullReset() { if(confirm("這將抹除所有資料！確定嗎？")) { localStorage.removeItem(DB_KEY); location.reload(); } }
+    function fullReset() { if(confirm("確定要重置嗎？所有紀錄都會消失！")) { localStorage.removeItem(DB_KEY); location.reload(); } }
 
     updateUI();
 </script>
